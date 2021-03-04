@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.HtmlUtils;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping(value = "/panda")
 public class UserController {
+
   @Autowired
   private UserService userService;
+
   @RequestMapping(value="/user/login",method = RequestMethod.POST)
-  public Result login(@RequestBody User requestUser) {
+  public Result login(@RequestBody User requestUser, HttpSession session) {
     // 对 html 标签进行转义，防止 XSS 攻击
     String username = HtmlUtils.htmlEscape(requestUser.getUserName());
 
@@ -25,6 +29,7 @@ public class UserController {
     if(StringUtils.isNullOrEmpty(user)){
       return new Result(400);
     }else{
+      session.setAttribute("user", user);
       return new Result(200);
     }
 //    if (!Objects.equals("admin", username) || !Objects.equals("123456", requestUser.getPassWord())) {
